@@ -2,24 +2,16 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>DevSync 测试页面</title>
+  <title>DevSync</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 40px;
       background: #f5f5f5;
+      display: flex;
+      gap: 30px;
     }
 
-    h1 {
-      margin-bottom: 10px;
-    }
-
-    p {
-      margin-bottom: 16px;
-    }
-
-    /* 测试用的盒子 */
     #box {
       width: 200px;
       height: 120px;
@@ -30,54 +22,24 @@
       justify-content: center;
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      position: relative;
-      margin-top: 40px;
     }
 
     #box2 {
-      width: 250px;
-       height: 150px;
+      width: 300px;
+       height: 200px;
        background: rgb(33, 150, 243);
        color: rgb(255, 255, 255);
        display: flex;
        align-items: center;
        justify-content: center;
        border-radius: 8px;
-       position: relative;
-       margin-top: 20px;
-    }
-
-    .info {
-      margin-top: 20px;
-      font-size: 14px;
-      color: #555;
-      line-height: 1.6;
-    }
-
-    code {
-      background: #eee;
-      padding: 2px 4px;
-      border-radius: 3px;
+       box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 10px;
     }
   </style>
 </head>
 <body>
-  <h1>DevSync 插件测试页面</h1>
-  <ol>
-    
-  </ol>
-
-  <div id="box">
-    Box 1（id="box"）
-  </div>
-
-  <div id="box2">
-    Box 2（id="box2"）
-  </div>
-
-  <div class="info">
-
-  <!-- 引入你已经写好的 dev-sync-plugin.js -->
+  <div id="box">Box 1</div>
+  <div id="box2">Box 2</div>
   <script src="./dev-sync-plugin.js"></script>
 </body>
 </html>
