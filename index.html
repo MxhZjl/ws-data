@@ -63,18 +63,8 @@
 </head>
 <body>
   <h1>DevSync 插件测试页面</h1>
-  <p>步骤：</p>
   <ol>
-    <li>确保已经在本地运行 <code>server.js</code>（<code>node server.js</code>）。</li>
-    <li>用浏览器打开本页面（例如通过 VSCode Live Server 或直接用文件路径）。</li>
-    <li>打开开发者工具 Console，执行：
-      <br />
-      <code>DevSync.enable('#box')</code>
-      或
-      <code>DevSync.enable('#box2')</code>
-    </li>
-    <li>在 Elements / Styles 面板中修改这些元素的 <code>style</code>（宽度、高度、top、left 等）。</li>
-    <li>查看本地 <code>synced-styles.css</code>，确认样式已被写入。</li>
+    
   </ol>
 
   <div id="box">
@@ -86,13 +76,6 @@
   </div>
 
   <div class="info">
-    <p>你可以在控制台尝试：</p>
-    <pre>
-DevSync.enable('#box');
-DevSync.enable('#box2');
-    </pre>
-    <p>然后在 DevTools 里选中元素，修改 <code>width</code> / <code>height</code> / <code>top</code> / <code>left</code> 等，插件会通过 WebSocket 把 <code>style</code> 同步到本地。</p>
-  </div>
 
   <!-- 引入你已经写好的 dev-sync-plugin.js -->
   <script src="./dev-sync-plugin.js"></script>
