@@ -28,7 +28,8 @@ wss.on('connection', (ws) => {
       const data = JSON.parse(message.toString());
       const { type, selector, style } = data;
 
-      if (!selector || !style) return;
+      if (!selector) return;
+      if (type !== 'drag' && type !== 'resize' && !style) return;
 
       console.log('收到更新:', type, selector, style);
 
@@ -38,6 +39,18 @@ wss.on('connection', (ws) => {
       if (type === 'cssRule') {
         // CSS 规则变化 -> 修改 <style> 标签里的规则
         updateCssRuleInHtml(selector, style);
+      } else if (type === 'drag') {
+        // 拖拽位置变化 -> 修改元素的 style 属性
+        const { position } = data;
+        if (position) {
+          updateDragPositionInHtml(selector, position);
+        }
+      } else if (type === 'resize') {
+        // 调整大小 -> 修改元素的 style 属性
+        const { size } = data;
+        if (size) {
+          updateResizeInHtml(selector, size);
+        }
       } else {
         // 行内样式变化 -> 修改元素的 style 属性
         updateInlineStyleInHtml(selector, style);
@@ -126,4 +139,100 @@ function updateInlineStyleInHtml(selector, style) {
 
   fs.writeFileSync(htmlPath, replaced, 'utf8');
   console.log('已更新 index.html 中元素', selector, '的 style');
+}
+
+// 更新拖拽位置到 HTML
+function updateDragPositionInHtml(selector, position) {
+  const htmlPath = path.join(__dirname, 'index.html');
+  if (!fs.existsSync(htmlPath)) {
+    console.error('index.html 不存在，无法同步位置');
+    return;
+  }
+
+  // 目前仅支持 #id 选择器
+  if (!selector.startsWith('#')) {
+    console.warn('当前只支持 #id 选择器，同步被忽略:', selector);
+    return;
+  }
+
+  const id = selector.slice(1);
+  let html = fs.readFileSync(htmlPath, 'utf8');
+
+  const { left, top } = position;
+  const positionStyles = `position: relative; left: ${left}; top: ${top};`;
+
+  // 匹配包含该 id 的起始标签，捕获所有 style 属性
+  const pattern = new RegExp(
+    '(<[^>]*\\bid="' +
+      id.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') +
+      '")((?:\\s+style="[^"]*")*)(\\s*[^>]*>)',
+    'i'
+  );
+  
+  const replaced = html.replace(pattern, (match, beforeId, allStyles, afterStyles) => {
+    // 直接用新的 style 替换所有旧的 style 属性
+    return beforeId + ` style="${positionStyles}"` + afterStyles;
+  });
+
+  if (replaced === html) {
+    console.warn('未在 index.html 中找到匹配的元素 id:', id);
+    return;
+  }
+
+  fs.writeFileSync(htmlPath, replaced, 'utf8');
+  console.log('已更新 index.html 中元素', selector, '的位置:', position);
+}
+
+// 更新元素大小到 HTML
+function updateResizeInHtml(selector, size) {
+  const htmlPath = path.join(__dirname, 'index.html');
+  if (!fs.existsSync(htmlPath)) {
+    console.error('index.html 不存在，无法同步大小');
+    return;
+  }
+
+  if (!selector.startsWith('#')) {
+    console.warn('当前只支持 #id 选择器，同步被忽略:', selector);
+    return;
+  }
+
+  const id = selector.slice(1);
+  let html = fs.readFileSync(htmlPath, 'utf8');
+
+  const { width, height } = size;
+
+  // 匹配包含该 id 的起始标签
+  const pattern = new RegExp(
+    '(<[^>]*\\bid="' +
+      id.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') +
+      '")((?:\\s+style="[^"]*")*)(\\s*[^>]*>)',
+    'i'
+  );
+
+  const replaced = html.replace(pattern, (match, beforeId, allStyles, afterStyles) => {
+    // 提取现有样式中的非 width/height 属性
+    let existingStyle = '';
+    if (allStyles) {
+      const styleMatch = allStyles.match(/style="([^"]*)"/);
+      if (styleMatch) {
+        existingStyle = styleMatch[1]
+          .replace(/width\s*:\s*[^;]+;?/gi, '')
+          .replace(/height\s*:\s*[^;]+;?/gi, '')
+          .trim();
+      }
+    }
+    
+    const sizeStyles = `width: ${width}; height: ${height};`;
+    const newStyle = existingStyle ? `${sizeStyles} ${existingStyle}` : sizeStyles;
+    
+    return beforeId + ` style="${newStyle}"` + afterStyles;
+  });
+
+  if (replaced === html) {
+    console.warn('未在 index.html 中找到匹配的元素 id:', id);
+    return;
+  }
+
+  fs.writeFileSync(htmlPath, replaced, 'utf8');
+  console.log('已更新 index.html 中元素', selector, '的大小:', size);
 }

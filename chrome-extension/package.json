@@ -1,0 +1,18 @@
+{
+  "name": "chrome-extension",
+  "version": "1.0.0",
+  "description": "在任意本地前端页面上拖拽调整元素位置和大小，并同步到本地文件。",
+  "main": "content.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@yao-pkg/pkg": "^6.10.1"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
+  }
+}
